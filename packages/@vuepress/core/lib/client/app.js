@@ -47,6 +47,7 @@ Vue.component('ClientOnly', ClientOnly)
 // core components
 Vue.component('Layout', getLayoutAsyncComponent('Layout'))
 Vue.component('NotFound', getLayoutAsyncComponent('NotFound'))
+Vue.component('CustomRouter', getLayoutAsyncComponent('CustomRouter'))
 /* eslint-disable-next-line vue/match-component-file-name */
 
 // global helper for adding base path to absolute urls
@@ -57,6 +58,13 @@ Vue.prototype.$withBase = function (path) {
   } else {
     return path
   }
+}
+
+function chooseRouter (h) {
+  if (siteData.themeConfig.customRouter) {
+    return h('CustomRouter', { ref: 'layout' })
+  }
+  return h('RouterView', { ref: 'layout' })
 }
 
 export function createApp (isServer) {
@@ -104,7 +112,7 @@ export function createApp (isServer) {
       router,
       render (h) {
         return h('div', { attrs: { id: 'app' }}, [
-          h('RouterView', { ref: 'layout' }),
+          chooseRouter(h),
           h('div', { class: 'global-ui' }, globalUIComponents.map(component => h(component)))
         ])
       }
